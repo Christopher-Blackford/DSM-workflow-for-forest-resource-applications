@@ -1,0 +1,5 @@
+# This file is here just to show directory structure
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore
