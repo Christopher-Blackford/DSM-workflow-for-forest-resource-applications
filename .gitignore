@@ -1,6 +1,7 @@
 #README creation
 *.doc
 *.docx
+README.docx
 
 # History files
 .Rhistory
