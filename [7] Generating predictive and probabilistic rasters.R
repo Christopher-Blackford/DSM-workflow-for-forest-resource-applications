@@ -8,8 +8,6 @@ start_time <- Sys.time()
 library(raster); library(rgdal); library(rgeos)
 library(caret); library(doParallel)
 
-rasterOptions(tmpdir="./temp")
-
 #####Specifying resolution, filter and whether to create probabilistic rasters (only applicable for Random Forest or or another model that records class probabilities)
 Raw_DEM_reso = 10
 Filter_type = 100

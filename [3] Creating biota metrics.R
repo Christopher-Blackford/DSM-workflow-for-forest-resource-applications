@@ -19,43 +19,55 @@ if(!dir.exists("./Predictor_Variables")){dir.create("./Predictor_Variables")}
 if(!dir.exists("./Predictor_Variables/Biota_metrics")){dir.create("./Predictor_Variables/Biota_metrics")}
 if(!dir.exists(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM"))){dir.create(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM"))}
 if(!dir.exists(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/continuous"))){dir.create(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/continuous"))}
-if(!dir.exists(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/discrete"))){dir.create(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/discrete"))}
-
+if(!dir.exists(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/categorical"))){dir.create(paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/categorical"))}
 
 #####Load in DEM
 DEM <- raster(paste0("./Raw/DEM_Raw/", Raw_DEM_reso, "DEM.tif"))
 
 #####Load in FRI
-Biota <- readOGR(dsn="./Raw/Biota_Raw/HF-601-2D.gdb",layer="Polygon_Forest")
+Biota <- readOGR(dsn="./Raw/Biota_Raw/HF-601-2D.gdb", layer="Polygon_Forest")
 Biota <- Biota[c("OHT", "UHT", "OLEADSPC", "ULEADSPC")]
 
-unique(Biota@data$OLEADSPC)
-unique(Biota@data$ULEADSPC)
-unique(Biota@data$OSI) #Empty
-unique(Biota@data$USI) #Empth
 unique(Biota@data$OHT)
 unique(Biota@data$UHT)
-unique(Biota@data$STKG)
+unique(Biota@data$OLEADSPC)
+unique(Biota@data$ULEADSPC)
 
 #Projecting
-Biota@proj4string <- DEM@crs #These are the same projection, just named differently which is why it's okay to do this
+#These files just happen to be in the same projection
 
 #Set raster resolution to DEM resolution
 r <- raster(ncol=(extent(DEM)@xmax - extent(DEM)@xmin)/Raw_DEM_reso, nrow=(extent(DEM)@ymax - extent(DEM)@ymin)/Raw_DEM_reso)
 extent(r) <- extent(DEM)
 
-#Convert to raster
-for (i in 1:ncol(Biota)){
-  Biota_ras <- rasterize(Biota, r, colnames(Biota@data)[i]) #Need to add "fun" argument to rasterize function to account for cells that overlap polygon boundaries. 
-                                                                #But in practice sine we are using high res data I don't think it matter
-  reso <- paste(round(res(Biota_ras)), collapse = " ")
-  reso <- gsub(x = reso, pattern = " ", replacement = "_")
-  if(i == 1| i == 2){writeRaster(Biota_ras, paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/continuous/bio_", colnames(Biota@data)[i], ".tif"), drivername = "GTiff", overwrite = TRUE)
-  }else{writeRaster(Biota_ras, paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/discrete/bio_", colnames(Biota@data)[i], ".tif"), drivername = "GTiff", overwrite = TRUE)}
-  
-  print(paste0("Done ", i))
-  }
 
+#OHT
+Biota_ras <- rasterize(Biota, r, "OHT") #Need to add "fun" argument to rasterize function to account for cells that overlap polygon boundaries. 
+#But in practice sine we are using high res data I don't think it matters
+
+writeRaster(Biota_ras, paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/continuous/bio_OHT.tif"), 
+            drivername = "GTiff", overwrite = TRUE)
+
+#UHT
+Biota_ras <- rasterize(Biota, r, "UHT") #Need to add "fun" argument to rasterize function to account for cells that overlap polygon boundaries. 
+#But in practice sine we are using high res data I don't think it matters
+
+writeRaster(Biota_ras, paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/continuous/bio_UHT.tif"), 
+            drivername = "GTiff", overwrite = TRUE)
+
+#OLEADSPC
+Biota_ras <- rasterize(Biota, r, "OLEADSPC") #Need to add "fun" argument to rasterize function to account for cells that overlap polygon boundaries. 
+#But in practice sine we are using high res data I don't think it matters
+
+writeRaster(Biota_ras, paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/categorical/bio_OLEADSPC.tif"), 
+            drivername = "GTiff", overwrite = TRUE)
+
+#ULEADSPC
+Biota_ras <- rasterize(Biota, r, "ULEADSPC") #Need to add "fun" argument to rasterize function to account for cells that overlap polygon boundaries. 
+#But in practice sine we are using high res data I don't think it matters
+
+writeRaster(Biota_ras, paste0("./Predictor_Variables/Biota_metrics/", Raw_DEM_reso, "DEM/categorical/bio_ULEADSPC.tif"), 
+            drivername = "GTiff", overwrite = TRUE)
 
 end_time <- Sys.time()
 print(paste("End of [3] Creating biota metrics ", capture.output(end_time - start_time)))
@@ -64,4 +76,3 @@ print(paste("End of [3] Creating biota metrics ", capture.output(end_time - star
 ###
 ##
 #END
-

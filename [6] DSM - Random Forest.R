@@ -37,18 +37,9 @@ Bio_categoricalCovariates <- list.files(path= paste0("./Predictor_Variables/Biot
 #Converting categorical to binary
 Cat_stack <- stack(c(Geo_Covariates, Bio_categoricalCovariates))
 
-library(RStoolbox)
-Cat_layers = NULL
-for(i in 1:length(Cat_stack@layers)){
-  temp_layer <- oneHotEncode(Cat_stack[[i]], classes=c(Cat_stack[[i]]@data@min:Cat_stack[[i]]@data@max))
-  Cat_layers <- append(Cat_layers, temp_layer)
-}
-rm(temp_layer, Cat_stack)
-
 #Stacking covariates
 Covariates <- c(Topo_Covariates, Hydro_Covariates, Bio_continuousCovariates, Dist_Covariates, Cat_layers)
 Covariates <- raster::stack(Covariates)
-
 
 #####
 #####Load in soil dataset if it exists, create it if it doesn't
@@ -91,9 +82,9 @@ mtry = c(3,5,11)
 tune_grid <- data.frame(mtry = mtry) #Creating a tuning grid for input into train(tuneGrid = tune)
 
 #How many folds of training data to analyse
-num_folds <- 5
+num_folds <- 10
 #How many times per fold you analyse the data
-num_repeats <- 5
+num_repeats <- 10
 
 #Train function settings
 fitControl <- trainControl(

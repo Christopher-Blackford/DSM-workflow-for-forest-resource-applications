@@ -85,13 +85,12 @@ Predictor_variable_names <- paste(names(Covariates), collapse="+")
 C <- c(0.01, 0.1, 1, 10, 100)
 #Sigma
 sigma <- c(0.01, 0.1, 1, 10, 100)
-c = c(0.1, 1, 10); sigma = c(0.1, 1, 10)
 tune_grid <- expand.grid(C = C, sigma = sigma)
 
 #How many folds of training data to analyse
-num_folds <- 5
+num_folds <- 10
 #How many times you sample from each fold
-num_repeats <- 5
+num_repeats <- 10
 
 #SVM settings
 fitControl <- trainControl(

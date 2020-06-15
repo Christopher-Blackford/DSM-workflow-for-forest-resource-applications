@@ -61,10 +61,9 @@ water_bodies@data$wb_present <- 1
 
 r <- raster(ncol=(WaterBody_extent@xmax - WaterBody_extent@xmin)/Raw_DEM_reso, nrow=(WaterBody_extent@ymax - WaterBody_extent@ymin)/Raw_DEM_reso)
 extent(r) <- extent(WaterBody_extent)
-water_bodies <- rasterize(water_bodies, r, 'wb_present') #Creates 368 312 500 cells
+r@crs <- DEM@crs
 
-#water bodies strangely loses it's CRS but we can reassign it here
-water_bodies@crs <- DEM@crs
+water_bodies <- rasterize(water_bodies, r, 'wb_present') #Creates 368 312 500 cells
 
 reso <- paste(round(res(water_bodies)), collapse = " ")
 reso <- gsub(x = reso, pattern = " ", replacement = "_")
@@ -102,6 +101,8 @@ water_channels@data$wc_present <- 1
 
 r <- raster(ncol=(WaterChannel_extent@xmax - WaterChannel_extent@xmin)/Raw_DEM_reso, nrow=(WaterChannel_extent@ymax - WaterChannel_extent@ymin)/Raw_DEM_reso)
 extent(r) <- extent(WaterChannel_extent)
+r@crs <- DEM@crs
+
 water_channels <- rasterize(water_channels, r, 'wc_present') #Creates 368 312 500 cells
 
 reso <- paste(round(res(water_channels)), collapse = " ")

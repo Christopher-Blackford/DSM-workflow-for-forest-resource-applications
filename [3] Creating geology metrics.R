@@ -30,23 +30,26 @@ crs(clip_box) <- crs(DEM)
 #Bedrock geology to raster
 Bed_geo <- spTransform(Bed_geo, DEM@crs)
 Bed_geo <- crop(Bed_geo, clip_box)
-Bedrock_df <- data.frame(UNITNAME_P = unique(Bed_geo@data$UNITNAME_P), code = 1:length(unique(Bed_geo@data$UNITNAME_P)))
+Bedrock_df <- data.frame(NEW_UNIT_N = sort(unique(Bed_geo@data$NEW_UNIT_N)), #alphabetize for raster code
+                         RasterCode = 1:length(unique(Bed_geo@data$NEW_UNIT_N)))
 Bed_geo <- sp::merge(Bed_geo, Bedrock_df)
 
 r <- raster(ncol=DEM@ncols, nrow=DEM@nrows)
 extent(r) <- extent(DEM)
-Bed_geo <- rasterize(Bed_geo, r, 'NEW_UNIT_N')
+r@crs <- DEM@crs
+Bed_geo <- rasterize(Bed_geo, r, 'RasterCode')
 
 #Quaternary geology to raster
 Qua_geo <- spTransform(Qua_geo, DEM@crs)
 Qua_geo <- crop(Qua_geo, clip_box)
-Quatern_df <- data.frame(UNIT_NAME = unique(Qua_geo@data$UNIT_NAME), code = 1:length(unique(Qua_geo@data$UNIT_NAME)))
+Quatern_df <- data.frame(Unit_TillC = sort(unique(Qua_geo@data$Unit_TillC)), #alphabetize for raster code
+                         RasterCode = 1:length(unique(Qua_geo@data$Unit_TillC)))
 Qua_geo <- sp::merge(Qua_geo, Quatern_df)
 
 r <- raster(ncol=DEM@ncols, nrow=DEM@nrows)
 extent(r) <- extent(DEM)
-Qua_geo <- rasterize(Qua_geo, r, 'Unit_TillC')
-plot(Qua_geo)
+r@crs <- DEM@crs
+Qua_geo <- rasterize(Qua_geo, r, 'RasterCode')
 
 #########################################
 #########################################
@@ -62,7 +65,6 @@ Qua_geo_mask <- mask(Qua_geo, DEM)
 raster::writeRaster(Qua_geo_mask, filename = paste0("./Predictor_Variables/Geology_metrics/", Raw_DEM_reso, "DEM/Qua_geo.tif"), 
                     drivername = "GTiff", overwrite = TRUE)
 
-
 end_time <- Sys.time()
 print(paste("End of [3] Creating geology metrics.R ", capture.output(end_time - start_time)))
 #####
@@ -70,4 +72,3 @@ print(paste("End of [3] Creating geology metrics.R ", capture.output(end_time - 
 ###
 ##
 #END
-

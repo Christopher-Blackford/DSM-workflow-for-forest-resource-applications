@@ -86,11 +86,10 @@ Predictor_variable_names <- paste(names(Covariates), collapse="+")
 #Number of neighbors to inform classification
 k <- seq(from = 1, to = 31, by = 2)
 tune_grid <- expand.grid(k=k)
-k = c(3,5,11)
 #How many folds of training data to analyse
-num_folds <- 5
+num_folds <- 10
 #How many times you sample from each fold
-num_repeats <- 5
+num_repeats <- 10
 
 #kNN settings
 fitControl <- trainControl(
